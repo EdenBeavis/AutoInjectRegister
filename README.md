@@ -3,7 +3,7 @@ Auto register classes and interfaces for dependency injection. Add the auto inje
 
 ## Adding Auto Inject to DI
 
-- Add to your program or startup file
+Add to your program or startup file
 
   ```c-sharp
    builder.Services.AutoInjectRegisterServices();
@@ -11,7 +11,7 @@ Auto register classes and interfaces for dependency injection. Add the auto inje
 
 ## Register your classes
 
-- Add the auto inject attribute to your classes
+Add the auto inject attribute to your classes
 
   ```c-sharp
     // class with interface implementation
