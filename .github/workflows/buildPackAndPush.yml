@@ -1,0 +1,35 @@
+name: Build, Test and Push - AutoInject nuget package .net
+on:
+
+  push:
+    branches: [ main ]
+
+jobs:
+  build-test-push:
+    name: Building Project solution
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        dotnet-version: ['8.0']
+    defaults:
+       run:
+         working-directory: .
+    steps:
+
+    - name: Code Checkout
+      uses: actions/checkout@v2
+
+    - name: Restore dependencies
+      run:  dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Test
+      run: dotnet test --configuration Release --no-build
+
+    - name: Pack
+      run: dotnet pack ./AutoInject/AutoInject.csproj -c Release --no-build --output ../nupkgs
+
+    - name: Publish
+      run: dotnet nuget push ../nupkgs/**.nupkg -s https://www.nuget.org/api/v2/package/ -k ${{ secrets.nugetkey }} --skip-duplicate
