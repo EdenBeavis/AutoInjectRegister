@@ -1,0 +1,28 @@
+name: Build and Test - AutoInject nuget package .net
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    name: Building Project solution
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        dotnet-version: ['8.0']
+    defaults:
+       run:
+         working-directory: .
+    steps:
+
+    - name: Code Checkout
+      uses: actions/checkout@v2
+
+    - name: Restore dependencies
+      run:  dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Test
+      run: dotnet test --configuration Release --no-build
