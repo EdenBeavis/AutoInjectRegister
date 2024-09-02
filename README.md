@@ -18,7 +18,7 @@ Add the auto inject attribute to your classes
     [AutoInject(Lifetime.Scoped)]
     internal class ScopedTestClass : ScopedTestInterface
     {
-        ....
+        ...
     }
 
     // class only
