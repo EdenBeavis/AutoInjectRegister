@@ -1,4 +1,4 @@
-using AutoInject.Tests.TestClasses;
+using AutoInject.Test.Library;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInject.Tests

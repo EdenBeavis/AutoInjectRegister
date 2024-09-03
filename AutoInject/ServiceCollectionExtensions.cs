@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace AutoInject
 {
@@ -6,9 +7,23 @@ namespace AutoInject
     {
         public static IServiceCollection AutoInjectRegisterServices(this IServiceCollection services)
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            services.Register(AppDomain.CurrentDomain.GetAssemblies());
+            return services;
+        }
 
-            var implementingClasses = assemblies
+        public static IServiceCollection AutoInjectRegisterServices(this IServiceCollection services, params Type[] typesToScan)
+        {
+            var assembliesToScan = (typesToScan == null || typesToScan.Length == 0) ?
+                AppDomain.CurrentDomain.GetAssemblies() :
+                typesToScan.Select(t => t.GetTypeInfo().Assembly);
+
+            services.Register(assembliesToScan);
+            return services;
+        }
+
+        private static IServiceCollection Register(this IServiceCollection services, IEnumerable<Assembly> assembliesToScan)
+        {
+            var implementingClasses = assembliesToScan
                 .SelectMany(s => s.GetTypes())
                 .Where(HasAutoAttribute);
 
@@ -16,59 +31,24 @@ namespace AutoInject
                 .SelectMany(t => t.GetInterfaces())
                 .Distinct();
 
-            services.AddAllTransient(interfaceTypes, implementingClasses);
-            services.AddAllScoped(interfaceTypes, implementingClasses);
-            services.AddAllSingletons(interfaceTypes, implementingClasses);
+            foreach (Lifetime lifetime in (Lifetime[])Enum.GetValues(typeof(Lifetime)))
+                services.AddAllServicesOfLifeTime(implementingClasses, lifetime);
 
             return services;
         }
 
-        private static IServiceCollection AddAllTransient(this IServiceCollection services, IEnumerable<Type> interfaceTypes, IEnumerable<Type> implementingClasses)
+        private static IServiceCollection AddAllServicesOfLifeTime(this IServiceCollection services, IEnumerable<Type> implementingClasses, Lifetime lifetime)
         {
-            const Lifetime lifetime = Lifetime.Transient;
-            services.AddAllClassServicesOfLifeTime(implementingClasses, lifetime);
-            services.AddAllInterfaceServicesOfLifeTime(interfaceTypes, implementingClasses, lifetime);
-            return services;
-        }
+            var lifeTimeClasses = GetClassesWithLifeTime(implementingClasses, lifetime);
 
-        private static IServiceCollection AddAllScoped(this IServiceCollection services, IEnumerable<Type> interfaceTypes, IEnumerable<Type> implementingClasses)
-        {
-            const Lifetime lifetime = Lifetime.Scoped;
-            services.AddAllClassServicesOfLifeTime(implementingClasses, lifetime);
-            services.AddAllInterfaceServicesOfLifeTime(interfaceTypes, implementingClasses, lifetime);
-            return services;
-        }
-
-        private static IServiceCollection AddAllSingletons(this IServiceCollection services, IEnumerable<Type> interfaceTypes, IEnumerable<Type> implementingClasses)
-        {
-            const Lifetime lifetime = Lifetime.Singleton;
-            services.AddAllClassServicesOfLifeTime(implementingClasses, lifetime);
-            services.AddAllInterfaceServicesOfLifeTime(interfaceTypes, implementingClasses, lifetime);
-            return services;
-        }
-
-        private static IServiceCollection AddAllInterfaceServicesOfLifeTime(this IServiceCollection services, IEnumerable<Type> interfaceTypes, IEnumerable<Type> implementingClasses, Lifetime lifetime)
-        {
-            foreach (var interfaceType in interfaceTypes)
+            foreach (var lifeTimeClass in lifeTimeClasses)
             {
-                var lifeTimeClasses = GetClassesWithLifeTime(implementingClasses, interfaceType, lifetime);
-
-                foreach (var lifeTimeClass in lifeTimeClasses)
-                    services.AddAutoService(lifeTimeClass, lifetime, interfaceType);
+                if (lifeTimeClass.GetInterfaces().Length == 0)
+                    services.AddAutoService(lifeTimeClass, lifetime);
+                else
+                    foreach (var interfaceType in lifeTimeClass.GetInterfaces())
+                        services.AddAutoService(lifeTimeClass, lifetime, interfaceType);
             }
-
-            return services;
-        }
-
-        private static IServiceCollection AddAllClassServicesOfLifeTime(this IServiceCollection services, IEnumerable<Type> implementingClasses, Lifetime lifetime)
-        {
-            var classOnlyServices = implementingClasses
-               .Where(t => t.GetInterfaces().Any() == false)
-               .Where(t => HasAutoAttributeAndLifeTime(t, lifetime));
-
-            foreach (var classOnly in classOnlyServices)
-                services.AddAutoService(classOnly, lifetime);
-
             return services;
         }
 
@@ -85,8 +65,8 @@ namespace AutoInject
             return services;
         }
 
-        private static IEnumerable<Type> GetClassesWithLifeTime(IEnumerable<Type> implementingClasses, Type interfaceType, Lifetime lifetime) => implementingClasses
-            .Where(t => interfaceType.IsAssignableFrom(t) && HasAutoAttributeAndLifeTime(t, lifetime));
+        private static IEnumerable<Type> GetClassesWithLifeTime(IEnumerable<Type> implementingClasses, Lifetime lifetime) => implementingClasses
+            .Where(t => HasAutoAttributeAndLifeTime(t, lifetime));
 
         private static AutoInjectAttribute? GetAutoAttribute(Type t) => Attribute.GetCustomAttribute(t, typeof(AutoInjectAttribute)) as AutoInjectAttribute;
 

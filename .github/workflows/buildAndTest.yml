@@ -3,9 +3,13 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  id-token: write
+  contents: read # This is required for actions/checkout@v4
+
 jobs:
   build-test:
-    name: Building Project solution
+    name: Build And Test Project
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
@@ -15,8 +19,8 @@ jobs:
          working-directory: .
     steps:
 
-    - name: Code Checkout
-      uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v4
 
     - name: Restore dependencies
       run:  dotnet restore

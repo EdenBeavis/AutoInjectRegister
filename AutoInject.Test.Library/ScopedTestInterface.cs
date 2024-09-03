@@ -1,4 +1,4 @@
-﻿namespace AutoInject.Tests.TestClasses
+﻿namespace AutoInject.Test.Library
 {
     internal interface ScopedTestInterface
     {
