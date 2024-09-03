@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-test-push:
-    name: Building Project solution
+    name: Build, Test and Push Package
     runs-on: "ubuntu-latest"
     strategy:
       matrix:

@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-test:
-    name: Building Project solution
+    name: Build And Test Project
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
