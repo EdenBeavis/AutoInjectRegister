@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  id-token: write
+  contents: read # This is required for actions/checkout@v3
+
 jobs:
   build-test-push:
     name: Building Project solution
@@ -16,8 +20,8 @@ jobs:
          working-directory: .
     steps:
 
-    - name: Code Checkout
-      uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Restore dependencies
       run:  dotnet restore

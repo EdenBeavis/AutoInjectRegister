@@ -18,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AutoInject\AutoInject.csproj" />
+    <ProjectReference Include="..\AutoInject.Test.Library2\AutoInject.Test.Library2.csproj" />
+    <ProjectReference Include="..\AutoInject.Test.Library\AutoInject.Test.Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>
