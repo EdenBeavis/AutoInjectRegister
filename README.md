@@ -22,7 +22,7 @@ This will only register files in that assembly, so be aware that it won't take e
 
 ## Register your classes
 
-Add the auto inject attribute to your classes
+Add the auto inject attribute to your classes, this will mark the class/interface for auto registration.
 
   ```c-sharp
     // class with interface implementation
