@@ -22,11 +22,64 @@ This will only register files in that assembly, so be aware that it won't take e
 
 ## Register your classes
 
-Add the auto inject attribute to your classes, this will mark the class/interface for auto registration.
+Add the auto inject attribute to your classes in two different ways.
+
+### No paramter attribute
+
+You will have access to three attributes.
+
+```c-sharp  
+    [AutoInjectTransient]
+
+    [AutoInjectScoped]
+
+    [AutoInjectsSingleton]
+  ```
+
+You can implement them like so.
+
+```c-sharp  
+    [AutoInjectTransient]
+    internal class ExampleTransientClass : IExampleTransientInterface
+    {
+        ...
+    }
+
+    [AutoInjectScoped]
+    internal class ExampleScopedClass : IExampleScopedInterface
+    {
+        ...
+    }
+
+    
+    
+    [AutoInjectsSingleton]
+    internal class SingletonClassOnly
+    {
+        ...
+    }
+  ```
+
+  Whilst you can implement multiple attributes of different lifetimes, avoid doing so as it could cause confusion of the lifetime of the service. If a class does have multiple attributes it will be registered in the order of the enum, ServiceLifetime. 
+
+  ```c-sharp  
+    [AutoInjectScoped]
+    [AutoInjectsSingleton] // This should be what it is registered as
+    [AutoInjectTransient]
+    internal class ExampleMultipleServiceClass : IExampleMultipleServiceInterface
+    {
+        ...
+    }
+  ```
+
+
+### Base attribute with a parameter
+
+You can also use the base class if you prefer that. The benefit of this is you will get compiler issues if you use the attribute multiple times.
 
   ```c-sharp
     // class with interface implementation
-    [AutoInject(Lifetime.Scoped)]
+    [AutoInject(ServiceLifetime.Scoped)]
     internal class ScopedTestClass : ScopedTestInterface
     {
         ...
@@ -40,7 +93,9 @@ Add the auto inject attribute to your classes, this will mark the class/interfac
     }
   ```
 
-## Avaliable lifetimes
+## Avaliable Service lifetimes
+
+This is just from the microsoft enum, ServiceLifetime.
 
   ```c-sharp
     Transient,

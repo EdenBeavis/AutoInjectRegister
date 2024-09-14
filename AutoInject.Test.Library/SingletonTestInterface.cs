@@ -1,25 +1,27 @@
-﻿namespace AutoInject.Test.Library
+﻿using AutoInject.Attributes;
+
+namespace AutoInject.Test.Library
 {
     internal interface SingletonTestInterface
     {
-        public bool Test();
+        public string Test();
     }
 
-    [AutoInject(Lifetime.Singleton)]
+    [AutoInjectSingleton]
     internal class SingletonTestClass : SingletonTestInterface
     {
-        public bool Test() => true;
+        public string Test() => "a";
     }
 
-    [AutoInject(Lifetime.Singleton)]
+    [AutoInjectSingleton]
     internal class SingletonTest2Class : SingletonTestInterface
     {
-        public bool Test() => false;
+        public string Test() => "b";
     }
 
-    [AutoInject(Lifetime.Singleton)]
+    [AutoInjectSingleton]
     internal class SingletonTestClassOnly
     {
-        public bool TestClassOnly() => true;
+        public string TestClassOnly() => "c";
     }
 }

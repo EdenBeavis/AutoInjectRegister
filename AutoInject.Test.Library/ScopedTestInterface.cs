@@ -1,25 +1,27 @@
-﻿namespace AutoInject.Test.Library
+﻿using AutoInject.Attributes;
+
+namespace AutoInject.Test.Library
 {
     internal interface ScopedTestInterface
     {
-        public int Test();
+        public string Test();
     }
 
-    [AutoInject(Lifetime.Scoped)]
+    [AutoInjectScoped]
     internal class ScopedTestClass : ScopedTestInterface
     {
-        public int Test() => 1;
+        public string Test() => "a";
     }
 
-    [AutoInject(Lifetime.Scoped)]
+    [AutoInjectScoped]
     internal class ScopedTest2Class : ScopedTestInterface
     {
-        public int Test() => 2;
+        public string Test() => "b";
     }
 
-    [AutoInject(Lifetime.Scoped)]
+    [AutoInjectScoped]
     internal class ScopedTestClassOnly
     {
-        public int TestClassOnly() => 3;
+        public string TestClassOnly() => "c";
     }
 }

@@ -1,23 +1,25 @@
-﻿namespace AutoInject.Test.Library
+﻿using AutoInject.Attributes;
+
+namespace AutoInject.Test.Library
 {
     internal interface TransientTestInterface
     {
         public string Test();
     }
 
-    [AutoInject(Lifetime.Transient)]
+    [AutoInjectTransient]
     internal class TransientTestClass : TransientTestInterface
     {
         public string Test() => "a";
     }
 
-    [AutoInject(Lifetime.Transient)]
+    [AutoInjectTransient]
     internal class TransientTest2Class : TransientTestInterface
     {
         public string Test() => "b";
     }
 
-    [AutoInject(Lifetime.Transient)]
+    [AutoInjectTransient]
     internal class TransientTestClassOnly
     {
         public string TestClassOnly() => "c";

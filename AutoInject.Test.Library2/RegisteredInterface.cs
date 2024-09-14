@@ -1,11 +1,13 @@
-﻿namespace AutoInject.Test.Library2
+﻿using AutoInject.Attributes;
+
+namespace AutoInject.SecondAssemblyTest.Library
 {
     internal interface RegisteredInterface
     {
         public int Test();
     }
 
-    [AutoInject(Lifetime.Transient)]
+    [AutoInjectTransient]
     internal class RegisteredTestClass : RegisteredInterface
     {
         public int Test() => 1;

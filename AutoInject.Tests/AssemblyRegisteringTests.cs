@@ -1,10 +1,11 @@
-﻿using AutoInject.Test.Library;
-using AutoInject.Test.Library2;
-using AutoInject.Test.Library2.FolderTest;
+﻿using AutoInject.SecondAssemblyTest.Library;
+using AutoInject.SecondAssemblyTest.Library.FolderTest;
+using AutoInject.Test.Library;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInject.Tests
 {
+    [Collection("ServiceTests")]
     public class AssemblyRegisteringTests
     {
         private IServiceCollection _serviceCollection;

@@ -14,9 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoInject.Test.Library", "AutoInject.Test.Library\AutoInject.Test.Library.csproj", "{FFC37814-C8F2-49C9-8820-2BD139E4C971}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoInject.Test.Library", "AutoInject.Test.Library\AutoInject.Test.Library.csproj", "{FFC37814-C8F2-49C9-8820-2BD139E4C971}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoInject.Test.Library2", "AutoInject.Test.Library2\AutoInject.Test.Library2.csproj", "{FB9CB903-DA6D-412D-AFF6-155E7EBD5C2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoInject.SecondAssemblyTest.Library", "AutoInject.Test.Library2\AutoInject.SecondAssemblyTest.Library.csproj", "{FB9CB903-DA6D-412D-AFF6-155E7EBD5C2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
