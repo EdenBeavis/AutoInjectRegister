@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -14,10 +14,12 @@
     <RepositoryType>git</RepositoryType>
     <PackageId>AutoInjectRegister</PackageId>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE.txt" Pack="true" PackagePath=""/>
+    <PackageReleaseNotes>Removed lifetime enum and replaced with microsofts enum. Updated the way assemblies are found.
+Added additionaly attributes for ease of use.</PackageReleaseNotes>
+  </PropertyGroup>  
+  
+  <ItemGroup>    
+    <None Include="LICENSE.txt" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md">
