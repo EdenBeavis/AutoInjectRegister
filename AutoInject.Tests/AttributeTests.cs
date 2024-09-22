@@ -30,6 +30,13 @@ namespace AutoInject.Tests
 
             Assert.NotNull(testInterface);
             Assert.NotNull(serviceDescriptor);
+            Assert.Equal(lifetime, serviceDescriptor.Lifetime);
+
+            foreach (ServiceLifetime noLifetime in ((ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime))).Where(l => l != lifetime))
+            {
+                var noDescriptor = _services.FirstOrDefault(service => service.ServiceType == type && service.Lifetime == noLifetime);
+                Assert.Null(noDescriptor);
+            }
         }
 
         [Theory]
@@ -46,7 +53,14 @@ namespace AutoInject.Tests
 
             Assert.NotNull(testInterface);
             Assert.NotNull(serviceDescriptor);
+            Assert.Equal(lifetime, serviceDescriptor.Lifetime);
             Assert.Equal("b", methodInfo.Invoke(testInterface, []));
+
+            foreach (ServiceLifetime noLifetime in ((ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime))).Where(l => l != lifetime))
+            {
+                var noDescriptor = _services.FirstOrDefault(service => service.ServiceType == type && service.Lifetime == noLifetime);
+                Assert.Null(noDescriptor);
+            }
         }
 
         [Theory]
@@ -58,11 +72,12 @@ namespace AutoInject.Tests
         public void RetrievingSameImplementationTwiceShouldProduceSameResult(ServiceLifetime lifetime, Type type)
         {
             var testInterface = _serviceProvider.GetService(type);
-            var serviceDescriptor = _services.FirstOrDefault(service => service.ServiceType == type && service.Lifetime == lifetime);
+            var serviceDescriptor = _services.FirstOrDefault(service => service.ServiceType == type);
             var methodInfo = type.GetMethod("Test");
 
             Assert.NotNull(testInterface);
             Assert.NotNull(serviceDescriptor);
+            Assert.Equal(lifetime, serviceDescriptor.Lifetime);
             Assert.Equal("b", methodInfo.Invoke(testInterface, []));
 
             // Retreieving twice should produce the same result
@@ -72,7 +87,14 @@ namespace AutoInject.Tests
 
             Assert.NotNull(testInterface2);
             Assert.NotNull(serviceDescriptor2);
+            Assert.Equal(lifetime, serviceDescriptor2.Lifetime);
             Assert.Equal("b", methodInfo2.Invoke(testInterface2, []));
+
+            foreach (ServiceLifetime noLifetime in ((ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime))).Where(l => l != lifetime))
+            {
+                var noDescriptor = _services.FirstOrDefault(service => service.ServiceType == type && service.Lifetime == noLifetime);
+                Assert.Null(noDescriptor);
+            }
         }
 
         [Theory]
@@ -89,7 +111,14 @@ namespace AutoInject.Tests
 
             Assert.NotNull(testClass);
             Assert.NotNull(serviceDescriptor);
+            Assert.Equal(lifetime, serviceDescriptor.Lifetime);
             Assert.Equal("c", methodInfo.Invoke(testClass, []));
+
+            foreach (ServiceLifetime noLifetime in ((ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime))).Where(l => l != lifetime))
+            {
+                var noDescriptor = _services.FirstOrDefault(service => service.ServiceType == type && service.Lifetime == noLifetime);
+                Assert.Null(noDescriptor);
+            }
         }
 
         [Theory]

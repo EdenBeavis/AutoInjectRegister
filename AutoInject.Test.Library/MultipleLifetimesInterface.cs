@@ -8,7 +8,7 @@ namespace AutoInject.Test.Library
         public string Test();
     }
 
-    [AutoInjectSingleton]
+    [AutoInjectSingleton] // What should be implemented
     [AutoInjectScoped]
     [AutoInjectTransient]
     [AutoInject(ServiceLifetime.Scoped)]
@@ -20,14 +20,14 @@ namespace AutoInject.Test.Library
     [AutoInjectScoped]
     [AutoInjectTransient]
     [AutoInject(ServiceLifetime.Scoped)]
-    [AutoInjectSingleton]
+    [AutoInjectSingleton] // What should be implemented
     internal class MultipleLifetimesTest2Class : MultipleLifetimesTestInterface
     {
         public string Test() => "b";
     }
 
     [AutoInjectTransient]
-    [AutoInject(ServiceLifetime.Scoped)]
+    [AutoInject(ServiceLifetime.Scoped)] // What should be implemented
     [AutoInjectScoped]
     internal class MultipleLifetimesTestClassOnly
     {
