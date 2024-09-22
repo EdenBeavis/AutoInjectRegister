@@ -93,6 +93,26 @@ You can also use the base class if you prefer that. The benefit of this is you w
     }
   ```
 
+  ### Using TryAddService instead of AddService
+
+In the case you want to try add the service instead of add, you can use the addtype enum as a parameter for all attributes types.
+
+  ```c-sharp
+    // class with interface implementation
+    [AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)]
+    internal class ScopedTestClass : ScopedTestInterface
+    {
+        ...
+    }
+
+    // class only
+    [AutoInjectSingleton(AddType.TryAdd)]
+    internal class SingletonClass
+    {
+        ...
+    }
+  ```
+
 ## Avaliable Service lifetimes
 
 This is just from the microsoft enum, ServiceLifetime.
@@ -101,4 +121,11 @@ This is just from the microsoft enum, ServiceLifetime.
     Transient,
     Scoped,
     Singleton
+  ```
+
+  ## Avaliable AddTypes
+
+  ```c-sharp
+    Add,
+    TryAdd
   ```
