@@ -2,10 +2,7 @@
 
 namespace AutoInject.Attributes
 {
-    public class AutoInjectSingletonAttribute : AutoInjectAttribute
+    public class AutoInjectSingletonAttribute(AddType addType = AddType.Add) : AutoInjectAttribute(ServiceLifetime.Singleton, addType)
     {
-        public AutoInjectSingletonAttribute() : base(ServiceLifetime.Singleton)
-        {
-        }
     }
 }

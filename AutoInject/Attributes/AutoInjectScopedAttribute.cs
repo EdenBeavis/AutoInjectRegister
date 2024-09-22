@@ -2,10 +2,7 @@
 
 namespace AutoInject.Attributes
 {
-    public class AutoInjectScopedAttribute : AutoInjectAttribute
+    public class AutoInjectScopedAttribute(AddType addType = AddType.Add) : AutoInjectAttribute(ServiceLifetime.Scoped, addType)
     {
-        public AutoInjectScopedAttribute() : base(ServiceLifetime.Scoped)
-        {
-        }
     }
 }
