@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.3.0</Version>
+    <Version>1.4.0</Version>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -14,7 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageId>AutoInjectRegister</PackageId>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>Added AddType enum to allow you to utilise tryaddaservice.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added options and the ability to exclude types.</PackageReleaseNotes>
   </PropertyGroup>  
   
   <ItemGroup>    
