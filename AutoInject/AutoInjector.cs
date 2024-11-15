@@ -10,11 +10,13 @@ namespace AutoInject
     {
         private readonly IServiceCollection _services;
         private readonly ConcurrentDictionary<string, Assembly> _assemblies = [];
+        private readonly AutoInjectorOptions _options;
 
-        public AutoInjector(IServiceCollection services, Type[]? typesToScan = null)
+        public AutoInjector(IServiceCollection services, AutoInjectorOptions? options = null)
         {
             _services = services;
-            UpdateAssemblies(typesToScan);
+            _options = options ?? new AutoInjectorOptions();
+            UpdateAssemblies();
         }
 
         internal void Register()
@@ -22,10 +24,6 @@ namespace AutoInject
             var implementingClasses = _assemblies.Values
                 .SelectMany(s => s.GetTypes())
                 .Where(HasAutoAttributes);
-
-            var interfaceTypes = implementingClasses
-                .SelectMany(t => t.GetInterfaces())
-                .Distinct();
 
             foreach (ServiceLifetime lifetime in (ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime)))
             {
@@ -40,16 +38,21 @@ namespace AutoInject
         {
             foreach (var lifeTimeClass in lifeTimeClasses)
             {
-                if (lifeTimeClass.GetInterfaces().Length == 0)
+                var interfaceTypes = lifeTimeClass.GetInterfaces();
+
+                if (interfaceTypes.Length == 0)
                     AddAutoService(null, lifeTimeClass, lifetime);
                 else
-                    foreach (var interfaceType in lifeTimeClass.GetInterfaces())
+                    foreach (var interfaceType in interfaceTypes)
                         AddAutoService(interfaceType, lifeTimeClass, lifetime);
             }
         }
 
         private void AddAutoService(Type? interfaceType, Type implementingClass, ServiceLifetime lifetime)
         {
+            if (ShouldBeExcluded(interfaceType, implementingClass))
+                return;
+
             var serviceToAdd = interfaceType is null ?
                 new ServiceDescriptor(implementingClass, implementingClass, lifetime) :
                 new ServiceDescriptor(interfaceType, implementingClass, lifetime);
@@ -60,17 +63,17 @@ namespace AutoInject
                 _services.Add(serviceToAdd);
         }
 
-        private void UpdateAssemblies(Type[]? typesToScan = null)
+        private void UpdateAssemblies()
         {
-            var assembliesToScan = (typesToScan == null || typesToScan.Length == 0) ?
+            var assembliesToScan = (_options.TypesToScan == null || _options.TypesToScan.Any() == false) ?
                 AppDomain.CurrentDomain.GetAssemblies() :
-                typesToScan.Select(t => t.GetTypeInfo().Assembly);
+                _options.TypesToScan.Select(t => t.GetTypeInfo().Assembly);
 
             foreach (var assembly in assembliesToScan)
                 _assemblies.TryAdd(assembly.FullName!, assembly);
 
             // Only continue if no types were add as a parameter
-            if (typesToScan?.Length > 0) return;
+            if (_options.TypesToScan?.Any() == true) return;
 
             try
             {
@@ -120,5 +123,9 @@ namespace AutoInject
 
             return attribute != null;
         }
+
+        private bool ShouldBeExcluded(Type? interfaceType, Type implementingClass) =>
+            (interfaceType != null && _options.TypesToExclude?.Contains(interfaceType) == true) ||
+            _options.TypesToExclude?.Contains(implementingClass) == true;
     }
 }

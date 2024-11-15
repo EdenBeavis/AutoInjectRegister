@@ -23,7 +23,19 @@ namespace AutoInject
         /// <returns></returns>
         public static IServiceCollection AutoInjectRegisterServices(this IServiceCollection services, params Type[] typesToScan)
         {
-            new AutoInjector(services, typesToScan).Register();
+            new AutoInjector(services, new AutoInjectorOptions { TypesToScan = typesToScan }).Register();
+            return services;
+        }
+
+        /// <summary>
+        /// Auto register services in the assemblies specified via options and exclude certain types via options.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="options">Options class containing TypesToScan and TypesToExclude</param>
+        /// <returns></returns>
+        public static IServiceCollection AutoInjectRegisterServices(this IServiceCollection services, AutoInjectorOptions options)
+        {
+            new AutoInjector(services, options).Register();
             return services;
         }
     }
