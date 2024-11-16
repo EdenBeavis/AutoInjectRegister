@@ -18,6 +18,8 @@ jobs:
        run:
          working-directory: .
     steps:
+    - name: Installed SDKs
+      run: dotnet --list-sdks
 
     - name: Checkout
       uses: actions/checkout@v4
