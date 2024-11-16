@@ -13,19 +13,19 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       matrix:
-        dotnet-version: ['9']
+        dotnet-version: ['9.0']
     defaults:
        run:
          working-directory: .
     steps:
-    
-    # - name: Setup dotnet
-    #   uses: actions/setup-dotnet@v4
-    #   with:
-    #     dotnet-version: '9'
 
     - name: Checkout
       uses: actions/checkout@v4
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9'
 
     - name: Restore dependencies
       run:  dotnet restore
