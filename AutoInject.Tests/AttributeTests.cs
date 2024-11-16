@@ -54,7 +54,7 @@ namespace AutoInject.Tests
             Assert.NotNull(testInterface);
             Assert.NotNull(serviceDescriptor);
             Assert.Equal(lifetime, serviceDescriptor.Lifetime);
-            Assert.Equal("b", methodInfo.Invoke(testInterface, []));
+            Assert.Equal("b", methodInfo?.Invoke(testInterface, []));
 
             foreach (ServiceLifetime noLifetime in ((ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime))).Where(l => l != lifetime))
             {
@@ -78,7 +78,7 @@ namespace AutoInject.Tests
             Assert.NotNull(testInterface);
             Assert.NotNull(serviceDescriptor);
             Assert.Equal(lifetime, serviceDescriptor.Lifetime);
-            Assert.Equal("b", methodInfo.Invoke(testInterface, []));
+            Assert.Equal("b", methodInfo?.Invoke(testInterface, []));
 
             // Retreieving twice should produce the same result
             var testInterface2 = _serviceProvider.GetService(type);
@@ -88,7 +88,7 @@ namespace AutoInject.Tests
             Assert.NotNull(testInterface2);
             Assert.NotNull(serviceDescriptor2);
             Assert.Equal(lifetime, serviceDescriptor2.Lifetime);
-            Assert.Equal("b", methodInfo2.Invoke(testInterface2, []));
+            Assert.Equal("b", methodInfo2?.Invoke(testInterface2, []));
 
             foreach (ServiceLifetime noLifetime in ((ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime))).Where(l => l != lifetime))
             {
@@ -112,7 +112,7 @@ namespace AutoInject.Tests
             Assert.NotNull(testClass);
             Assert.NotNull(serviceDescriptor);
             Assert.Equal(lifetime, serviceDescriptor.Lifetime);
-            Assert.Equal("c", methodInfo.Invoke(testClass, []));
+            Assert.Equal("c", methodInfo?.Invoke(testClass, []));
 
             foreach (ServiceLifetime noLifetime in ((ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime))).Where(l => l != lifetime))
             {
