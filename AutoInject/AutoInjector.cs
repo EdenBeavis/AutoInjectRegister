@@ -12,7 +12,7 @@ namespace AutoInject
         private readonly ConcurrentDictionary<string, Assembly> _assemblies = [];
         private readonly AutoInjectorOptions _options;
 
-        public AutoInjector(IServiceCollection services, AutoInjectorOptions? options = null)
+        internal AutoInjector(IServiceCollection services, AutoInjectorOptions? options = null)
         {
             _services = services;
             _options = options ?? new AutoInjectorOptions();
@@ -23,14 +23,13 @@ namespace AutoInject
         {
             var implementingClasses = _assemblies.Values
                 .SelectMany(s => s.GetTypes())
-                .Where(HasAutoAttributes);
+                .Where(HasAutoAttributes)
+                .ToList();
 
             foreach (ServiceLifetime lifetime in (ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime)))
             {
                 var classesOfLifeTime = GetClassesWithLifeTime(implementingClasses, lifetime);
                 AddAllServicesOfLifeTime(classesOfLifeTime, lifetime);
-
-                implementingClasses = implementingClasses.Except(classesOfLifeTime);
             }
         }
 
@@ -96,8 +95,22 @@ namespace AutoInject
             }
         }
 
-        private IEnumerable<Type> GetClassesWithLifeTime(IEnumerable<Type> implementingClasses, ServiceLifetime lifetime) =>
-            implementingClasses.Where(t => HasAutoAttributeAndLifeTime(t, lifetime));
+        private IEnumerable<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
+        {
+            var lifetimeClasses = new Stack<Type>();
+
+            for (var i = implementingClasses.Count - 1; i >= 0; i--)
+            {
+                var item = implementingClasses[i];
+                if (HasAutoAttributeAndLifeTime(item, lifetime))
+                {
+                    lifetimeClasses.Push(item);
+                    implementingClasses.RemoveAt(i);
+                }
+            }
+
+            return lifetimeClasses;
+        }
 
         private static AutoInjectAttribute[]? GetAutoAttributes(Type t) =>
             Attribute.GetCustomAttributes(t, typeof(AutoInjectAttribute)) as AutoInjectAttribute[];
