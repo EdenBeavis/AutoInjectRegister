@@ -26,24 +26,21 @@ namespace AutoInject
                 .Where(HasAutoAttributes)
                 .ToList();
 
-            foreach (ServiceLifetime lifetime in (ServiceLifetime[])Enum.GetValues(typeof(ServiceLifetime)))
-            {
-                var classesOfLifeTime = GetClassesWithLifeTime(implementingClasses, lifetime);
-                AddAllServicesOfLifeTime(classesOfLifeTime, lifetime);
-            }
+            foreach (ServiceLifetime lifetime in Enum.GetValues<ServiceLifetime>())
+                AddAllServicesOfLifeTime(implementingClasses, lifetime);
         }
 
-        private void AddAllServicesOfLifeTime(IEnumerable<Type> lifeTimeClasses, ServiceLifetime lifetime)
+        private void AddAllServicesOfLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
         {
-            foreach (var lifeTimeClass in lifeTimeClasses)
+            foreach (var lifeTimeClass in GetClassesWithLifeTime(implementingClasses, lifetime))
             {
                 var interfaceTypes = lifeTimeClass.GetInterfaces();
 
-                if (interfaceTypes.Length == 0)
-                    AddAutoService(null, lifeTimeClass, lifetime);
-                else
+                if (interfaceTypes.Any())
                     foreach (var interfaceType in interfaceTypes)
                         AddAutoService(interfaceType, lifeTimeClass, lifetime);
+                else
+                    AddAutoService(null, lifeTimeClass, lifetime);
             }
         }
 
@@ -95,7 +92,7 @@ namespace AutoInject
             }
         }
 
-        private IEnumerable<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
+        private static IEnumerable<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
         {
             var lifetimeClasses = new Stack<Type>();
 
