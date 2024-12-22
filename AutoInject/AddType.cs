@@ -1,8 +1,7 @@
-﻿namespace AutoInject
+﻿namespace AutoInject;
+
+public enum AddType
 {
-    public enum AddType
-    {
-        Add,
-        TryAdd
-    }
+    Add,
+    TryAdd
 }
