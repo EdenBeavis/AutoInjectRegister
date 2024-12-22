@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace AutoInject.Attributes
+namespace AutoInject.Attributes;
+
+public class AutoInjectTransientAttribute(AddType addType = AddType.Add) : AutoInjectAttribute(ServiceLifetime.Transient, addType)
 {
-    public class AutoInjectTransientAttribute(AddType addType = AddType.Add) : AutoInjectAttribute(ServiceLifetime.Transient, addType)
-    {
-    }
 }

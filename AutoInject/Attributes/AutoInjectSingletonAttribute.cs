@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace AutoInject.Attributes
+namespace AutoInject.Attributes;
+
+public class AutoInjectSingletonAttribute(AddType addType = AddType.Add) : AutoInjectAttribute(ServiceLifetime.Singleton, addType)
 {
-    public class AutoInjectSingletonAttribute(AddType addType = AddType.Add) : AutoInjectAttribute(ServiceLifetime.Singleton, addType)
-    {
-    }
 }

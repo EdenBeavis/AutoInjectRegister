@@ -1,8 +1,7 @@
-﻿namespace AutoInject
+﻿namespace AutoInject;
+
+public enum InclusionType
 {
-    public enum InclusionType
-    {
-        All,
-        TypesToScanOnly
-    }
+    All,
+    TypesToScanOnly
 }
