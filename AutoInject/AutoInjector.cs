@@ -135,7 +135,12 @@ namespace AutoInject
         }
 
         private bool ShouldBeExcluded(Type? interfaceType, Type implementingClass) =>
-            (interfaceType != null && _options.TypesToExclude?.Contains(interfaceType) == true) ||
-            _options.TypesToExclude?.Contains(implementingClass) == true;
+            IsTypeToScanOnlyAndNotInScanList(interfaceType, implementingClass) || IsInExclusion(interfaceType, implementingClass);
+
+        private bool IsTypeToScanOnlyAndNotInScanList(Type? interfaceType, Type implementingClass) =>
+            _options.InclusionType == InclusionType.TypesToScanOnly && !((interfaceType != null && _options.TypesToScan?.Contains(interfaceType) == true) || _options.TypesToScan?.Contains(implementingClass) == true);
+
+        private bool IsInExclusion(Type? interfaceType, Type implementingClass) =>
+            (interfaceType != null && _options.TypesToExclude?.Contains(interfaceType) == true) || _options.TypesToExclude?.Contains(implementingClass) == true;
     }
 }
