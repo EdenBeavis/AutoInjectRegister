@@ -27,7 +27,18 @@ public class AutoInjectorOptions
 }
 ```
 
-You can then pass the options class in like this.
+You can then pass the options in as function.
+
+```c-sharp
+builder.Services.AutoInjectRegisterServices(options =>
+    {
+        options.TypesToScan = [typeof(MyClass), typeof(YourClass)];
+        options.InclusionType = [typeof(ExclusionClass), typeof(ExclusionClass)];
+    });
+```
+
+
+Or create the object yourself.
 
 ```c-sharp
 builder.Services.AutoInjectRegisterServices(
