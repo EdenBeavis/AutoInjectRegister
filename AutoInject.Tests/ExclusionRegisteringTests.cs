@@ -13,10 +13,12 @@ namespace AutoInject.Tests
             _serviceCollection = new ServiceCollection();
         }
 
-        [Fact]
-        public void ServiceProviderWillExcludeInterfaceService()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ServiceProviderWillExcludeInterfaceService(bool useActionToCreateOption)
         {
-            _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToExclude = [typeof(ExclusionTestInterface)] });
+            AutoRegister([typeof(ExclusionTestInterface)], useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             //Get no interface
@@ -24,10 +26,12 @@ namespace AutoInject.Tests
             Assert.Null(testInterface);
         }
 
-        [Fact]
-        public void ServiceProviderWillExcludeAClassService()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ServiceProviderWillExcludeAClassService(bool useActionToCreateOption)
         {
-            _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToExclude = [typeof(ExclusionTest2Class)] });
+            AutoRegister([typeof(ExclusionTest2Class)], useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             //Getting interface should return something
@@ -40,10 +44,12 @@ namespace AutoInject.Tests
             Assert.Null(testClass);
         }
 
-        [Fact]
-        public void ServiceProviderWillExcludeTwoClassServices()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ServiceProviderWillExcludeTwoClassServices(bool useActionToCreateOption)
         {
-            _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToExclude = [typeof(ExclusionTestClass), typeof(ExclusionTest2Class)] });
+            AutoRegister([typeof(ExclusionTestClass), typeof(ExclusionTest2Class)], useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             //Getting interface should return nothing
@@ -57,10 +63,12 @@ namespace AutoInject.Tests
             Assert.Null(testClass2);
         }
 
-        [Fact]
-        public void ServiceProviderWillExcludeInterfaceCanGetAnotherInterfaceService()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ServiceProviderWillExcludeInterfaceCanGetAnotherInterfaceService(bool useActionToCreateOption)
         {
-            _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToExclude = [typeof(ExclusionTestInterface)] });
+            AutoRegister([typeof(ExclusionTestInterface)], useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             //Get no interface
@@ -71,6 +79,17 @@ namespace AutoInject.Tests
             var testInterface2 = serviceProvider.GetService<TransientTestInterface>();
             Assert.NotNull(testInterface2);
             Assert.Equal("b", testInterface2.Test());
+        }
+
+        private void AutoRegister(Type[] typesToExclude, bool useActionToCreateOption)
+        {
+            if (useActionToCreateOption)
+                _serviceCollection = _serviceCollection.AutoInjectRegisterServices(options =>
+                {
+                    options.TypesToExclude = typesToExclude;
+                });
+            else
+                _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToExclude = typesToExclude });
         }
     }
 }

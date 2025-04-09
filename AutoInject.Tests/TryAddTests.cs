@@ -6,24 +6,16 @@ namespace AutoInject.Tests
     [Collection("ServiceTests")]
     public class TryAddTests
     {
-        private readonly IServiceCollection _services;
-        private readonly ServiceProvider _serviceProvider;
-
-        public TryAddTests()
-        {
-            _services = new ServiceCollection()
-                .AutoInjectRegisterServices();
-
-            _serviceProvider = _services.BuildServiceProvider();
-        }
-
         [Fact]
         public void ServiceProviderHasServiceOfLifetimeInterface()
         {
-            var testInterface = _serviceProvider.GetService<TryAddTestInterface>();
-            var serviceDescriptorSingleton = _services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Singleton);
-            var serviceDescriptorScoped = _services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Scoped);
-            var serviceDescriptorTransient = _services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Transient);
+            var services = new ServiceCollection().AutoInjectRegisterServices();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var testInterface = serviceProvider.GetService<TryAddTestInterface>();
+            var serviceDescriptorSingleton = services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Singleton);
+            var serviceDescriptorScoped = services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Scoped);
+            var serviceDescriptorTransient = services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Transient);
 
             Assert.NotNull(testInterface);
             Assert.NotNull(serviceDescriptorSingleton);
@@ -36,8 +28,11 @@ namespace AutoInject.Tests
         [Fact]
         public void ServiceProviderHasServiceOfLifetimeInterface_AndUsesFirstImplementation()
         {
-            var testInterface = _serviceProvider.GetService<TryAddTestInterface>();
-            var serviceDescriptor = _services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Singleton);
+            var services = new ServiceCollection().AutoInjectRegisterServices();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var testInterface = serviceProvider.GetService<TryAddTestInterface>();
+            var serviceDescriptor = services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestInterface) && service.Lifetime == ServiceLifetime.Singleton);
 
             Assert.NotNull(testInterface);
             Assert.NotNull(serviceDescriptor);
@@ -48,10 +43,13 @@ namespace AutoInject.Tests
         [Fact]
         public void ServiceProviderHasClassImplementation_AndUsesScopedImplementation()
         {
-            var testClass = _serviceProvider.GetService<TryAddTestClassOnly>();
-            var serviceDescriptorScoped = _services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestClassOnly) && service.Lifetime == ServiceLifetime.Scoped);
-            var serviceDescriptorSingleton = _services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestClassOnly) && service.Lifetime == ServiceLifetime.Singleton);
-            var serviceDescriptorTransient = _services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestClassOnly) && service.Lifetime == ServiceLifetime.Transient);
+            var services = new ServiceCollection().AutoInjectRegisterServices();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var testClass = serviceProvider.GetService<TryAddTestClassOnly>();
+            var serviceDescriptorScoped = services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestClassOnly) && service.Lifetime == ServiceLifetime.Scoped);
+            var serviceDescriptorSingleton = services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestClassOnly) && service.Lifetime == ServiceLifetime.Singleton);
+            var serviceDescriptorTransient = services.FirstOrDefault(service => service.ServiceType == typeof(TryAddTestClassOnly) && service.Lifetime == ServiceLifetime.Transient);
 
             Assert.NotNull(testClass);
             Assert.NotNull(serviceDescriptorScoped);

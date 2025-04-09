@@ -15,10 +15,12 @@ namespace AutoInject.Tests
             _serviceCollection = new ServiceCollection();
         }
 
-        [Fact]
-        public void ServiceProviderWillExcludeInterfacesNotInScanListService()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ServiceProviderWillExcludeInterfacesNotInScanListService(bool useActionToCreateOption)
         {
-            _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToScan = [typeof(TransientTestInterface)], InclusionType = InclusionType.TypesToScanOnly });
+            AutoRegister([typeof(TransientTestInterface)], InclusionType.TypesToScanOnly, useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             // Get included interface
@@ -34,10 +36,12 @@ namespace AutoInject.Tests
             Assert.Null(testInterface2);
         }
 
-        [Fact]
-        public void ServiceProviderWillExcludeInterfacesNotInScanListWithMultipleTypesToScanService()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ServiceProviderWillExcludeInterfacesNotInScanListWithMultipleTypesToScanService(bool useActionToCreateOption)
         {
-            _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToScan = [typeof(TransientTestInterface), typeof(RegisteredInterface)], InclusionType = InclusionType.TypesToScanOnly });
+            AutoRegister([typeof(TransientTestInterface), typeof(RegisteredInterface)], InclusionType.TypesToScanOnly, useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             // Get included interface
@@ -57,23 +61,37 @@ namespace AutoInject.Tests
             Assert.Null(testInterface4);
         }
 
-        [Fact]
-        public void ServiceProviderWillIncludeAllInterfacesService()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ServiceProviderWillIncludeAllInterfacesService(bool useActionToCreateOption)
         {
-            _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToScan = [typeof(TransientTestInterface)], InclusionType = InclusionType.All });
+            AutoRegister([typeof(TransientTestInterface)], InclusionType.All, useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             //Get included interface
             var testInterface = serviceProvider.GetService<TransientTestInterface>();
             Assert.NotNull(testInterface);
 
-            // Class not added so don't included
+            // Class not added but should still register
             var classInterface = serviceProvider.GetService<TransientTestClassOnly>();
             Assert.NotNull(classInterface);
 
-            // Other not added interface
+            // Other not added interface, but still added
             var testInterface2 = serviceProvider.GetService<SingletonTestInterface>();
             Assert.NotNull(testInterface2);
+        }
+
+        private void AutoRegister(Type[] typesToScan, InclusionType inclusionType, bool useActionToCreateOption)
+        {
+            if (useActionToCreateOption)
+                _serviceCollection = _serviceCollection.AutoInjectRegisterServices(options =>
+                {
+                    options.TypesToScan = typesToScan;
+                    options.InclusionType = inclusionType;
+                });
+            else
+                _serviceCollection = _serviceCollection.AutoInjectRegisterServices(new AutoInjectorOptions { TypesToScan = typesToScan, InclusionType = inclusionType });
         }
     }
 }
