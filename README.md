@@ -6,19 +6,19 @@ For .Net and C#.
 ## Adding Auto Inject to DI
 Add to your program or startup file
 
-  ```c-sharp
+  ```csharp
    builder.Services.AutoInjectRegisterServices();
   ```
 
 Alternatively, if you would like to be more specific with which assembly you would like added, add a type from an assembly you want added. This will only register files in that assembly, so be aware that it won't take everything plus that assembly. It will only take the assembly specified.
 
- ```c-sharp
+ ```csharp
    builder.Services.AutoInjectRegisterServices(typeof(IDbReader), typeof(ICache), typeof(IProxy));
   ```
 
 If you would like to use exclude specific types you will need to pass in an options class into the register services method. You can use the InclusionType enum to specify you want to ONLY use the types passed into types to scan.
 
-```c-sharp
+```csharp
 public class AutoInjectorOptions
 {
     public IEnumerable<Type> TypesToScan { get; set; } = [];
@@ -29,7 +29,7 @@ public class AutoInjectorOptions
 
 You can then pass the options in as function.
 
-```c-sharp
+```csharp
 builder.Services.AutoInjectRegisterServices(options =>
     {
         options.TypesToScan = [typeof(MyClass), typeof(YourClass)];
@@ -40,7 +40,7 @@ builder.Services.AutoInjectRegisterServices(options =>
 
 Or create the object yourself.
 
-```c-sharp
+```csharp
 builder.Services.AutoInjectRegisterServices(
     new AutoInjectorOptions 
     {
@@ -56,7 +56,7 @@ Add the auto inject attribute to your classes in two different ways.
 ### No paramter attribute
 You will have access to three attributes.
 
-```c-sharp  
+```csharp  
 [AutoInjectTransient]
 
 [AutoInjectScoped]
@@ -66,7 +66,7 @@ You will have access to three attributes.
 
 You can implement them like so.
 
-```c-sharp  
+```csharp  
 [AutoInjectTransient]
 internal class ExampleTransientClass : IExampleTransientInterface
 {
@@ -90,7 +90,7 @@ internal class SingletonClassOnly
 
 Whilst you can implement multiple attributes of different lifetimes, avoid doing so as it could cause confusion of the lifetime of the service. If a class does have multiple attributes it will be registered in the order of the enum, ServiceLifetime. 
 
-```c-sharp  
+```csharp  
 [AutoInjectScoped]
 [AutoInjectsSingleton] // This should be what it is registered as
 [AutoInjectTransient]
@@ -104,7 +104,7 @@ internal class ExampleMultipleServiceClass : IExampleMultipleServiceInterface
 ### Base attribute with a parameter
 You can also use the base class if you prefer that. The benefit of this is you will get compiler issues if you use the attribute multiple times.
 
-```c-sharp
+```csharp
 // class with interface implementation
 [AutoInject(ServiceLifetime.Scoped)]
 internal class ScopedTestClass : ScopedTestInterface
@@ -123,7 +123,7 @@ internal class ScopedTestClassOnly
 ### Using TryAddService instead of AddService
 In the case you want to try add the service instead of add, you can use the addtype enum as a parameter for all attributes types.
 
-```c-sharp
+```csharp
 // class with interface implementation
 [AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)]
 internal class ScopedTestClass : ScopedTestInterface
@@ -144,7 +144,7 @@ internal class SingletonClass
 ### Service lifetimes
 This is just from the microsoft enum, ServiceLifetime.
 
-```c-sharp
+```csharp
 Transient,
 Scoped,
 Singleton
@@ -152,14 +152,14 @@ Singleton
 
 ### AddTypes
 
-```c-sharp
+```csharp
 Add,
 TryAdd
 ```
 
 ### InclusionTypes
 
-```c-sharp
+```csharp
 All,
 TypesToScanOnly
 ```
