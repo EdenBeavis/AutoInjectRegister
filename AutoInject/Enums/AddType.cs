@@ -1,4 +1,4 @@
-﻿namespace AutoInject;
+﻿namespace AutoInject.Enums;
 
 public enum AddType
 {

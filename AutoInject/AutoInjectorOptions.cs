@@ -1,4 +1,6 @@
-﻿namespace AutoInject;
+﻿using AutoInject.Enums;
+
+namespace AutoInject;
 
 public class AutoInjectorOptions
 {

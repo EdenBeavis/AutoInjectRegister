@@ -1,4 +1,5 @@
 ﻿using AutoInject.Attributes;
+using AutoInject.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Collections.Concurrent;

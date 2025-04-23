@@ -1,4 +1,5 @@
-﻿using AutoInject.SecondAssemblyTest.Library;
+﻿using AutoInject.Enums;
+using AutoInject.SecondAssemblyTest.Library;
 using AutoInject.SecondAssemblyTest.Library.FolderTest;
 using AutoInject.Test.Library;
 using Microsoft.Extensions.DependencyInjection;

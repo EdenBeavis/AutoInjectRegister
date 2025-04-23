@@ -1,7 +1,6 @@
 # AutoInjectRegister
-Auto register classes and interfaces for dependency injection. Add the auto inject attribute to the top of any class file to be marked for auto injection. This will help you know the scope of each class just by looking at the class file.
-
-For .Net and C#.
+Auto register classes and interfaces for dependency injection. 
+Add the auto inject attribute to the top of any class file to be marked for auto injection helping you identify the scope of each class just by looking at the class file.
 
 ## Adding Auto Inject to DI
 Add to your program or startup file
@@ -16,7 +15,7 @@ Alternatively, if you would like to be more specific with which assembly you wou
    builder.Services.AutoInjectRegisterServices(typeof(IDbReader), typeof(ICache), typeof(IProxy));
   ```
 
-If you would like to use exclude specific types you will need to pass in an options class into the register services method. You can use the InclusionType enum to specify you want to ONLY use the types passed into types to scan.
+If you would like to use exclude specific types you can pass in an options class into the register services method. You can use the InclusionType enum to specify you want to ONLY use the types passed into types to scan.
 
 ```csharp
 public class AutoInjectorOptions
@@ -33,7 +32,7 @@ You can then pass the options in as function.
 builder.Services.AutoInjectRegisterServices(options =>
     {
         options.TypesToScan = [typeof(MyClass), typeof(YourClass)];
-        options.InclusionType = [typeof(ExclusionClass), typeof(ExclusionClass)];
+        options.InclusionType = InclusionType.TypesToScanOnly;
     });
 ```
 
@@ -54,14 +53,18 @@ builder.Services.AutoInjectRegisterServices(
 Add the auto inject attribute to your classes in two different ways.
 
 ### No paramter attribute
-You will have access to three attributes.
+You will have access to seven attributes, including the base.
 
 ```csharp  
+[AutoInjectsSingleton]
+[AutoInjectScoped]
 [AutoInjectTransient]
 
-[AutoInjectScoped]
+[AutoInjectTryAddSingleton]
+[AutoInjectTryAddScoped]
+[AutoInjectTryAddTransient]
 
-[AutoInjectsSingleton]
+[AutoInject] // Defaults to transient and add
 ```
 
 You can implement them like so.
@@ -73,15 +76,13 @@ internal class ExampleTransientClass : IExampleTransientInterface
     ...
 }
 
-[AutoInjectScoped]
+[AutoInjectTryAddScoped]
 internal class ExampleScopedClass : IExampleScopedInterface
 {
     ...
 }
-
     
-    
-[AutoInjectsSingleton]
+[AutoInject]
 internal class SingletonClassOnly
 {
     ...
@@ -102,29 +103,9 @@ internal class ExampleMultipleServiceClass : IExampleMultipleServiceInterface
 
 
 ### Base attribute with a parameter
-You can also use the base class if you prefer that. The benefit of this is you will get compiler issues if you use the attribute multiple times.
+You can use the base class, the benefit being you will get compiler issues if you use the attribute multiple times.
 
 ```csharp
-// class with interface implementation
-[AutoInject(ServiceLifetime.Scoped)]
-internal class ScopedTestClass : ScopedTestInterface
-{
-    ...
-}
-
-// class only
-[AutoInject(Lifetime.Scoped)]
-internal class ScopedTestClassOnly
-{
-    ...
-}
-```
-
-### Using TryAddService instead of AddService
-In the case you want to try add the service instead of add, you can use the addtype enum as a parameter for all attributes types.
-
-```csharp
-// class with interface implementation
 [AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)]
 internal class ScopedTestClass : ScopedTestInterface
 {
@@ -132,8 +113,18 @@ internal class ScopedTestClass : ScopedTestInterface
 }
 
 // class only
-[AutoInjectSingleton(AddType.TryAdd)]
-internal class SingletonClass
+[AutoInject] // Defaults to transient and add
+internal class TransientTestClassOnly
+{
+    ...
+}
+```
+
+### Using TryAddService instead of AddService
+In the case you want to try add the service instead of add, you can use the addtype enum as a parameter for the base attribute.
+```csharp
+[AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)]
+internal class ScopedTestClass : ScopedTestInterface
 {
     ...
 }
