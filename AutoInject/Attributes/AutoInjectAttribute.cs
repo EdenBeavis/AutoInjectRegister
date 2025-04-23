@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AutoInject.Enums;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInject.Attributes;
 

@@ -3,6 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInject.Attributes;
 
-public class AutoInjectSingletonAttribute() : AutoInjectAttribute(ServiceLifetime.Singleton, AddType.Add)
+public class AutoInjectTryAddScopedAttribute() : AutoInjectAttribute(ServiceLifetime.Scoped, AddType.TryAdd)
 {
 }

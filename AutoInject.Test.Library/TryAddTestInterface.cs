@@ -1,4 +1,5 @@
 ﻿using AutoInject.Attributes;
+using AutoInject.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInject.Test.Library
@@ -8,9 +9,9 @@ namespace AutoInject.Test.Library
         public string Test();
     }
 
-    [AutoInjectSingleton(AddType.TryAdd)] // This should be the only implemented interface
-    [AutoInjectScoped(AddType.TryAdd)]
-    [AutoInjectTransient(AddType.TryAdd)]
+    [AutoInjectTryAddSingleton] // This should be the only implemented interface
+    [AutoInjectTryAddScoped]
+    [AutoInjectTryAddTransient]
     [AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)]
     internal class TryAddTestClass : TryAddTestInterface
     {
@@ -18,18 +19,18 @@ namespace AutoInject.Test.Library
     }
 
     // This should no be implemented at all
-    [AutoInjectScoped(AddType.TryAdd)]
-    [AutoInjectTransient(AddType.TryAdd)]
+    [AutoInjectTryAddScoped]
+    [AutoInjectTryAddTransient]
     [AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)]
-    [AutoInjectSingleton(AddType.TryAdd)]
+    [AutoInjectTryAddSingleton]
     internal class TryAddTest2Class : TryAddTestInterface
     {
         public string Test() => "b";
     }
 
-    [AutoInjectTransient(AddType.TryAdd)]
+    [AutoInjectTryAddTransient]
     [AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)] // Due to ordering, this should be the only implemented interface
-    [AutoInjectScoped(AddType.TryAdd)]
+    [AutoInjectTryAddScoped]
     internal class TryAddTestClassOnly
     {
         public string TestClassOnly() => "c";

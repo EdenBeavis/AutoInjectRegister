@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AutoInject.Enums;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoInject.Attributes;
 
-public class AutoInjectScopedAttribute(AddType addType = AddType.Add) : AutoInjectAttribute(ServiceLifetime.Scoped, addType)
+public class AutoInjectScopedAttribute() : AutoInjectAttribute(ServiceLifetime.Scoped, AddType.Add)
 {
 }
