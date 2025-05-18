@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.8.0</Version>
+    <Version>1.8.1</Version>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -14,7 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageId>AutoInjectRegister</PackageId>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>Added indepdent attributes for add and try add.</PackageReleaseNotes>
+    <PackageReleaseNotes>Cleaned up inject file to try and reduce unneeded variables and added consistency.</PackageReleaseNotes>
   </PropertyGroup>  
   
   <ItemGroup>    

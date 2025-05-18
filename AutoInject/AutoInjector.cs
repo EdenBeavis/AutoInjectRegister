@@ -2,7 +2,6 @@
 using AutoInject.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace AutoInject;
@@ -10,19 +9,18 @@ namespace AutoInject;
 internal class AutoInjector
 {
     private readonly IServiceCollection _services;
-    private readonly ConcurrentDictionary<string, Assembly> _assemblies = [];
     private readonly AutoInjectorOptions _options;
 
     internal AutoInjector(IServiceCollection services, AutoInjectorOptions? options = null)
     {
         _services = services;
         _options = options ?? new AutoInjectorOptions();
-        UpdateAssemblies();
     }
 
     internal void Register()
     {
-        var implementingClasses = _assemblies.Values
+        var assemblies = GetAssemblies();
+        var implementingClasses = assemblies
             .SelectMany(s => s.GetTypes())
             .Where(HasAutoAttributes)
             .ToList();
@@ -37,7 +35,7 @@ internal class AutoInjector
         {
             var interfaceTypes = lifeTimeClass.GetInterfaces();
 
-            if (interfaceTypes.Any())
+            if (interfaceTypes.Length != 0)
                 foreach (var interfaceType in interfaceTypes)
                     AddAutoService(interfaceType, lifeTimeClass, lifetime);
             else
@@ -60,40 +58,45 @@ internal class AutoInjector
             _services.Add(serviceToAdd);
     }
 
-    private void UpdateAssemblies()
+    private IEnumerable<Assembly> GetAssemblies()
     {
-        var assembliesToScan = (_options.TypesToScan == null || _options.TypesToScan.Any() == false) ?
+        var assemblies = new Dictionary<string, Assembly>();
+
+        var assembliesToScan = (_options.TypesToScan is null || _options.TypesToScan.Any() == false) ?
             AppDomain.CurrentDomain.GetAssemblies() :
             _options.TypesToScan.Select(t => t.GetTypeInfo().Assembly);
 
         foreach (var assembly in assembliesToScan)
-            _assemblies.TryAdd(assembly.FullName!, assembly);
+            assemblies.TryAdd(assembly.FullName!, assembly);
 
         // Only continue if no types were add as a parameter
-        if (_options.TypesToScan?.Any() == true) return;
+        if (_options.TypesToScan?.Any() == true)
+            return assemblies.Values.AsEnumerable();
 
         try
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            if (path is null) return;
+            if (path is null || string.IsNullOrEmpty(path))
+                return assemblies.Values.AsEnumerable();
 
             foreach (string dll in Directory.GetFiles(path, "*.dll"))
             {
                 var assembly = Assembly.LoadFile(dll);
 
                 if (assembly is not null && assembly.FullName is not null)
-                    _assemblies.TryAdd(assembly.FullName!, assembly);
+                    assemblies.TryAdd(assembly.FullName!, assembly);
             }
         }
         catch (Exception)
         {
-            // no need to do throw anything, we need to exit safely if we are trying to access something we can't
-            return;
+            // No need to do throw anything, we need to exit safely if we are trying to access something we can't
         }
+
+        return assemblies.Values.AsEnumerable();
     }
 
-    private static IEnumerable<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
+    private static Stack<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
     {
         var lifetimeClasses = new Stack<Type>();
 
@@ -110,37 +113,38 @@ internal class AutoInjector
         return lifetimeClasses;
     }
 
-    private static AutoInjectAttribute[]? GetAutoAttributes(Type t) =>
-        Attribute.GetCustomAttributes(t, typeof(AutoInjectAttribute)) as AutoInjectAttribute[];
+    private static AutoInjectAttribute[] GetAutoAttributes(Type t) =>
+        Attribute.GetCustomAttributes(t, typeof(AutoInjectAttribute)) as AutoInjectAttribute[] ?? [];
 
     private static bool HasAutoAttributes(Type t)
     {
         var attributes = GetAutoAttributes(t);
-        return attributes != null && attributes.Length > 0;
+        return attributes.Length > 0;
     }
 
     private static bool HasAutoAttributeAndLifeTime(Type t, ServiceLifetime lifetime)
     {
         var attributes = GetAutoAttributes(t);
-        var attribute = attributes?.FirstOrDefault(a => a.Lifetime == lifetime);
+        var attribute = attributes.FirstOrDefault(a => a.Lifetime == lifetime);
 
-        return attribute != null;
+        return attribute is not null;
     }
 
     private static bool HasAutoAttributeAndTryAdd(Type t, ServiceLifetime lifetime)
     {
         var attributes = GetAutoAttributes(t);
-        var attribute = attributes?.FirstOrDefault(a => a.Lifetime == lifetime && a.AddType == AddType.TryAdd);
+        var attribute = attributes.FirstOrDefault(a => a.Lifetime == lifetime && a.AddType is AddType.TryAdd);
 
-        return attribute != null;
+        return attribute is not null;
     }
 
     private bool ShouldBeExcluded(Type? interfaceType, Type implementingClass) =>
         IsTypeToScanOnlyAndNotInScanList(interfaceType, implementingClass) || IsInExclusion(interfaceType, implementingClass);
 
     private bool IsTypeToScanOnlyAndNotInScanList(Type? interfaceType, Type implementingClass) =>
-        _options.InclusionType == InclusionType.TypesToScanOnly && !((interfaceType != null && _options.TypesToScan?.Contains(interfaceType) == true) || _options.TypesToScan?.Contains(implementingClass) == true);
+        _options.InclusionType is InclusionType.TypesToScanOnly &&
+        !((interfaceType is not null && _options.TypesToScan?.Contains(interfaceType) == true) || _options.TypesToScan?.Contains(implementingClass) == true);
 
     private bool IsInExclusion(Type? interfaceType, Type implementingClass) =>
-        (interfaceType != null && _options.TypesToExclude?.Contains(interfaceType) == true) || _options.TypesToExclude?.Contains(implementingClass) == true;
+        (interfaceType is not null && _options.TypesToExclude?.Contains(interfaceType) == true) || _options.TypesToExclude?.Contains(implementingClass) == true;
 }
