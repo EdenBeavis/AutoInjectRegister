@@ -96,21 +96,23 @@ internal class AutoInjector
         return assemblies.Values.AsEnumerable();
     }
 
-    private static Stack<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
+    private static IEnumerable<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
     {
-        var lifetimeClasses = new Stack<Type>();
+        var length = implementingClasses.Count - 1;
 
-        for (var i = implementingClasses.Count - 1; i >= 0; i--)
+        for (var i = 0; i <= length; i++)
         {
-            var item = implementingClasses[i];
-            if (HasAutoAttributeAndLifeTime(item, lifetime))
+            if (HasAutoAttributeAndLifeTime(implementingClasses[i], lifetime))
             {
-                lifetimeClasses.Push(item);
-                implementingClasses.RemoveAt(i);
-            }
-        }
+                yield return implementingClasses[i];
 
-        return lifetimeClasses;
+                // Remove service that is now added
+                implementingClasses.RemoveAt(i);
+                i--;
+            }
+
+            length = implementingClasses.Count - 1;
+        }
     }
 
     private static AutoInjectAttribute[] GetAutoAttributes(Type t) =>
