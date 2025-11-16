@@ -22,7 +22,8 @@ public class AutoInjectorOptions
 {
     public IEnumerable<Type> TypesToScan { get; set; } = [];
     public IEnumerable<Type> TypesToExclude { get; set; } = [];
-    public InclusionType InclusionType { get; set; } = InclusionType.All;
+    public InclusionType InclusionType { get; set; } = InclusionType.AllAutoAttributes;
+    public ServiceLifetime DefaultLifetime { get; set; } = ServiceLifetime.Transient;
 }
 ```
 
@@ -35,7 +36,6 @@ builder.Services.AutoInjectRegisterServices(options =>
         options.InclusionType = InclusionType.TypesToScanOnly;
     });
 ```
-
 
 Or create the object yourself.
 
@@ -50,9 +50,20 @@ builder.Services.AutoInjectRegisterServices(
 ```
 
 ## Register your classes
-Add the auto inject attribute to your classes in two different ways.
+You can register your classes in two different ways. You can add the auto inject attribute to your classes or use the inclusion type `NoAttributeRegister`.
 
-### No paramter attribute
+### No attribute register
+If you would like to leave most of the heavy lifting to the package, simply set or your inclusion type to `NoAttributeRegister`. 
+It should pick up all your classes for you and register them to the default lifetime (which you can update aswell). It will also make sure if you have attributes set to use them first before defaulting.
+
+  ```csharp
+   builder.Services.AutoInjectRegisterServices(options => { options.InclusionType = InclusionType.NoAttributeRegister; });
+  ```
+
+### Attributes
+There are two different ways of using attributes. Parameterless or the base attribute. 
+
+#### No paramter attribute
 You will have access to seven attributes, including the base.
 
 ```csharp  
@@ -101,8 +112,7 @@ internal class ExampleMultipleServiceClass : IExampleMultipleServiceInterface
 }
 ```
 
-
-### Base attribute with a parameter
+#### Base attribute with a parameter
 You can use the base class, the benefit being you will get compiler issues if you use the attribute multiple times.
 
 ```csharp
@@ -120,7 +130,7 @@ internal class TransientTestClassOnly
 }
 ```
 
-### Using TryAddService instead of AddService
+#### Using TryAddService instead of AddService
 In the case you want to try add the service instead of add, you can use the addtype enum as a parameter for the base attribute.
 ```csharp
 [AutoInject(ServiceLifetime.Scoped, AddType.TryAdd)]
@@ -151,6 +161,7 @@ TryAdd
 ### InclusionTypes
 
 ```csharp
-All,
-TypesToScanOnly
+AllAutoAttributes,
+TypesToScanOnly,
+NoAttributeRegister
 ```
