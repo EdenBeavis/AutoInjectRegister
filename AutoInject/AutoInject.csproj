@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>1.9.1</Version>
+    <Version>1.10.0</Version>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -14,7 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageId>AutoInjectRegister</PackageId>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>Upgraded missing package update</PackageReleaseNotes>
+    <PackageReleaseNotes>Added new inclusion type to actually auto register files for you.</PackageReleaseNotes>
   </PropertyGroup>  
   
   <ItemGroup>    

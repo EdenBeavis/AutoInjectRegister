@@ -20,17 +20,17 @@ internal class AutoInjector
     internal void Register()
     {
         var assemblies = GetAssemblies()
-            .Where(a => IsLocalAssembly(a) || _options.InclusionType != InclusionType.DoItAllForMe);
+            .Where(a => IsLocalAssembly(a) || _options.InclusionType != InclusionType.NoAttributeRegister);
 
         var implementingClasses = assemblies
             .SelectMany(s => s.GetTypes())
-            .Where(t => (_options.InclusionType == InclusionType.DoItAllForMe || HasAutoAttributes(t)) && t.IsClass)
+            .Where(t => (_options.InclusionType == InclusionType.NoAttributeRegister || HasAutoAttributes(t)) && t.IsClass)
             .ToList();
 
         foreach (ServiceLifetime lifetime in Enum.GetValues<ServiceLifetime>())
             AddAllServicesOfLifeTime(implementingClasses, lifetime);
 
-        if (implementingClasses.Count != 0 && _options.InclusionType == InclusionType.DoItAllForMe)
+        if (implementingClasses.Count != 0 && _options.InclusionType == InclusionType.NoAttributeRegister)
         {
             foreach (var lifeTimeClass in implementingClasses)
             {

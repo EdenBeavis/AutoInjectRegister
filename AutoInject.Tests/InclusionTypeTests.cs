@@ -9,7 +9,6 @@ namespace AutoInject.Tests
     [Collection("ServiceTests")]
     public class InclusionTypeTests
     {
-        private readonly IServiceCollection _services;
         private IServiceCollection _serviceCollection;
 
         public InclusionTypeTests()
@@ -68,7 +67,7 @@ namespace AutoInject.Tests
         [InlineData(false)]
         public void ServiceProviderWillIncludeAllInterfacesService(bool useActionToCreateOption)
         {
-            AutoRegister([typeof(TransientTestInterface)], InclusionType.All, useActionToCreateOption);
+            AutoRegister([typeof(TransientTestInterface)], InclusionType.AllAutoAttributes, useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             //Get included interface
@@ -89,7 +88,7 @@ namespace AutoInject.Tests
         [InlineData(false)]
         public void ServiceProviderWillDoItAllForMeScoped(bool useActionToCreateOption)
         {
-            AutoRegister([typeof(TransientTestInterface)], InclusionType.DoItAllForMe, useActionToCreateOption, ServiceLifetime.Scoped);
+            AutoRegister([typeof(TransientTestInterface)], InclusionType.NoAttributeRegister, useActionToCreateOption, ServiceLifetime.Scoped);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             // Ensure interface is still transisent if it had an attribute
@@ -116,7 +115,7 @@ namespace AutoInject.Tests
         [InlineData(false)]
         public void ServiceProviderWillDoItAllForMeDefault(bool useActionToCreateOption)
         {
-            AutoRegister([typeof(TransientTestInterface)], InclusionType.DoItAllForMe, useActionToCreateOption);
+            AutoRegister([typeof(TransientTestInterface)], InclusionType.NoAttributeRegister, useActionToCreateOption);
             var serviceProvider = _serviceCollection.BuildServiceProvider();
 
             // Other not added interface, but still added

@@ -2,7 +2,7 @@
 
 public enum InclusionType
 {
-    All,
+    AllAutoAttributes,
     TypesToScanOnly,
-    DoItAllForMe
+    NoAttributeRegister
 }
