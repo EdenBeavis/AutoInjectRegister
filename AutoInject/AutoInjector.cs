@@ -19,28 +19,43 @@ internal class AutoInjector
 
     internal void Register()
     {
-        var assemblies = GetAssemblies();
+        var assemblies = GetAssemblies()
+            .Where(a => IsLocalAssembly(a) || _options.InclusionType != InclusionType.DoItAllForMe);
+
         var implementingClasses = assemblies
             .SelectMany(s => s.GetTypes())
-            .Where(HasAutoAttributes)
+            .Where(t => (_options.InclusionType == InclusionType.DoItAllForMe || HasAutoAttributes(t)) && t.IsClass)
             .ToList();
 
         foreach (ServiceLifetime lifetime in Enum.GetValues<ServiceLifetime>())
             AddAllServicesOfLifeTime(implementingClasses, lifetime);
+
+        if (implementingClasses.Count != 0 && _options.InclusionType == InclusionType.DoItAllForMe)
+        {
+            foreach (var lifeTimeClass in implementingClasses)
+            {
+                GetInterfacesAndAddService(lifeTimeClass, _options.DefaultLifetime);
+            }
+        }
     }
 
     private void AddAllServicesOfLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
     {
         foreach (var lifeTimeClass in GetClassesWithLifeTime(implementingClasses, lifetime))
         {
-            var interfaceTypes = lifeTimeClass.GetInterfaces();
-
-            if (interfaceTypes.Length != 0)
-                foreach (var interfaceType in interfaceTypes)
-                    AddAutoService(interfaceType, lifeTimeClass, lifetime);
-            else
-                AddAutoService(null, lifeTimeClass, lifetime);
+            GetInterfacesAndAddService(lifeTimeClass, lifetime);
         }
+    }
+
+    private void GetInterfacesAndAddService(Type lifeTimeClass, ServiceLifetime lifetime)
+    {
+        var interfaceTypes = lifeTimeClass.GetInterfaces();
+
+        if (interfaceTypes.Length != 0)
+            foreach (var interfaceType in interfaceTypes)
+                AddAutoService(interfaceType, lifeTimeClass, lifetime);
+        else
+            AddAutoService(null, lifeTimeClass, lifetime);
     }
 
     private void AddAutoService(Type? interfaceType, Type implementingClass, ServiceLifetime lifetime)
@@ -96,7 +111,7 @@ internal class AutoInjector
         return assemblies.Values.AsEnumerable();
     }
 
-    private static IEnumerable<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
+    private IEnumerable<Type> GetClassesWithLifeTime(List<Type> implementingClasses, ServiceLifetime lifetime)
     {
         var length = implementingClasses.Count - 1;
 
@@ -149,4 +164,19 @@ internal class AutoInjector
 
     private bool IsInExclusion(Type? interfaceType, Type implementingClass) =>
         (interfaceType is not null && _options.TypesToExclude?.Contains(interfaceType) == true) || _options.TypesToExclude?.Contains(implementingClass) == true;
+
+    private static bool IsLocalAssembly(Assembly assembly)
+    {
+        try
+        {
+            var location = assembly.Location;
+            var basePath = AppDomain.CurrentDomain.BaseDirectory;
+
+            return location.StartsWith(basePath, StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

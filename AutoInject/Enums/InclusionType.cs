@@ -3,5 +3,6 @@
 public enum InclusionType
 {
     All,
-    TypesToScanOnly
+    TypesToScanOnly,
+    DoItAllForMe
 }
